@@ -1,0 +1,37 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: trade
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: trade
+    spec:
+      hostNetwork: false
+      containers:
+      - name: trade
+        image: mycluster.icp:8500/default/daytrader3:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - protocol: TCP
+          containerPort: 9080
+        resources:
+          limits: {}
+      imagePullSecrets:
+      - name: sa-default
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: trade
+  labels:
+    app: trade
+spec:
+  type: NodePort
+  ports:
+  - name: trade
+    port: 9080
+  selector:
+    app: trade
